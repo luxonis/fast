@@ -3,12 +3,14 @@
 
 # Based on the ARM_ARCHITECTURE environment variable
 # Set IS_ARM to build on the Odroid board
-IF(DEFINED ENV{ARM_ARCHITECTURE})
-  MESSAGE("ARM_ARCHITECTURE environment variable set to " $ENV{ARM_ARCHITECTURE})
-  SET(IS_ARM TRUE)
-ELSE()
-  SET(IS_ARM FALSE)
-ENDIF()
+if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
+    MESSAGE("ARM_ARCHITECTURE environment variable set to " $ENV{ARM_ARCHITECTURE})
+    SET(IS_ARM TRUE)
+    # Set any ARM-specific build flags here.
+else()
+    message(STATUS "Building on non-ARM architecture")
+    SET(IS_ARM FALSE)
+endif()
 
 SET(BUILD_TEST TRUE)
 
