@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.16.2)
 #######################################
 # user config
 
@@ -23,7 +24,6 @@ SET(BUILD_TEST TRUE)
 #######################################
 SET(PROJECT_NAME fast)
 PROJECT(${PROJECT_NAME})
-CMAKE_MINIMUM_REQUIRED (VERSION 2.8.3)
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Build type and flags
@@ -68,7 +68,17 @@ SET(fast_LIBRARY_DIR ${PROJECT_BINARY_DIR} )
 SET(fast_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/fastConfig.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/fastConfig.cmake @ONLY IMMEDIATE )
+
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/MyLibraryConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/MyLibraryConfig.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/MyLibrary
+)
 export( PACKAGE fast )
 
-INSTALL(DIRECTORY include/fast DESTINATION ${CMAKE_INSTALL_PREFIX}/include FILES_MATCHING PATTERN "*.h" )
-INSTALL(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib )
+install(DIRECTORY include/fast DESTINATION ${CMAKE_INSTALL_PREFIX}/include FILES_MATCHING PATTERN "*.h" )
+install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib )
+# Install CMake specific files
+install(FILES
+ "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+ DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+)
