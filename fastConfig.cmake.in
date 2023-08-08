@@ -1,1 +1,3 @@
-include("${CMAKE_CURRENT_LIST_DIR}/fastTargets.cmake")
+if (NOT TARGET fast::fast)
+  include ("${CMAKE_CURRENT_LIST_DIR}/fastTargets.cmake")
+endif (NOT TARGET fast::fast)
