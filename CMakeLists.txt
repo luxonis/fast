@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.8.3)
+CMAKE_MINIMUM_REQUIRED (VERSION 3.4)
 #######################################
 # user config
 
@@ -19,7 +19,8 @@ IF(DEFINED ENV{ARM_ARCHITECTURE})
   SET(IS_ARM TRUE)
 ENDIF()
 
-SET(BUILD_TEST TRUE)
+SET(BUILD_TEST FALSE)
+add_definitions(-std=c++14)
 
 #######################################
 SET(PROJECT_NAME fast)
@@ -49,6 +50,7 @@ ENDIF()
 # Add library
 INCLUDE_DIRECTORIES(include src)
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCES})
+MESSAGE("PROJECT_NAME set to " ${PROJECT_NAME})
 
 # Add Tests
 IF(BUILD_TEST)
@@ -59,25 +61,16 @@ IF(BUILD_TEST)
   TARGET_LINK_LIBRARIES(fast_test ${OpenCV_LIBS} ${PROJECT_NAME})
 ENDIF()
 
+install(TARGETS ${PROJECT_NAME}
+        EXPORT fastTargets
+        LIBRARY DESTINATION lib
+        INCLUDES DESTINATION include)
 
-################################################################################
-# Create the fastConfig.cmake file for other cmake projects.
-GET_TARGET_PROPERTY( FULL_LIBRARY_NAME ${PROJECT_NAME} LOCATION )
-SET(fast_LIBRARIES ${FULL_LIBRARY_NAME} )
-SET(fast_LIBRARY_DIR ${PROJECT_BINARY_DIR} )
-MESSAGE("fast_LIBRARIES variable set to " ${fast_LIBRARIES})
-MESSAGE("fast_LIBRARY_DIR  variable set to " ${fast_LIBRARY_DIR})
 
-SET(fast_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
-CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/fastConfig.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/fastConfig.cmake @ONLY IMMEDIATE )
+install(EXPORT fastTargets
+      FILE fastTargets.cmake
+      DESTINATION  "${CMAKE_INSTALL_PREFIX}/lib/cmake/${PROJECT_NAME}")
 
-export( PACKAGE fast )
-
-install(DIRECTORY include/fast DESTINATION ${CMAKE_INSTALL_PREFIX}/include FILES_MATCHING PATTERN "*.h" )
-install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib )
-# Install CMake specific files
-install(FILES
- "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
- DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/${PROJECT_NAME}"
-)
+configure_file(fastConfig.cmake.in fastConfig.cmake @ONLY)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/fastConfig.cmake"
+    DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/${PROJECT_NAME}")
