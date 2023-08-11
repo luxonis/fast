@@ -32,12 +32,13 @@ include(CMakePackageConfigHelpers)
 include(CMakeDependentOption)
 
 # Build type and flags
-set(CMAKE_BUILD_TYPE Release) # Options:  Debug, RelWithDebInfo, Release
-set(CMAKE_CXX_FLAGS "-Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unknown-pragmas")
+# TODO - reapply these flags if need may be
+# set(CMAKE_CXX_FLAGS "-Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unknown-pragmas")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O0 -g")
 if(IS_ARM)
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -march=armv8-a")
 else()
+  # TODO - condition out these flags and the sse impl
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -mmmx -msse -msse -msse2 -msse3 -mssse3 -fomit-frame-pointer")
 endif()
 
@@ -46,9 +47,9 @@ set(SOURCES  ${PROJECT_SOURCE_DIR}/src/fast_10.cpp
              ${PROJECT_SOURCE_DIR}/src/fast_10_score.cpp
              ${PROJECT_SOURCE_DIR}/src/nonmax_3x3.cpp)
 if(IS_ARM)
-#  LIST(APPEND SOURCES ${PROJECT_SOURCE_DIR}/src/faster_corner_9_neon.cpp)
+#  list(APPEND SOURCES ${PROJECT_SOURCE_DIR}/src/faster_corner_9_neon.cpp)
 else()
-  LIST(APPEND SOURCES ${PROJECT_SOURCE_DIR}/src/faster_corner_10_sse.cpp)
+  list(APPEND SOURCES ${PROJECT_SOURCE_DIR}/src/faster_corner_10_sse.cpp)
 endif()
 
 # Add library
@@ -62,13 +63,13 @@ set(CMAKEPACKAGE_INSTALL_DIR
     CACHE PATH "The directory relative to CMAKE_INSTALL_PREFIX where ${PACKAGE_NAME}Config.cmake is installed"
     )
 
-target_include_directories(${PROJECT_NAME} PUBLIC 
+target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
 
 # ---------------------------- new
-install(TARGETS ${PROJECT_NAME} 
+install(TARGETS ${PROJECT_NAME}
     EXPORT ${PROJECT_NAME}Targets
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
@@ -76,7 +77,7 @@ install(TARGETS ${PROJECT_NAME}
     INCLUDES DESTINATION include
 )
 
-install(DIRECTORY include/ 
+install(DIRECTORY include/
     DESTINATION include)
 
 configure_package_config_file (

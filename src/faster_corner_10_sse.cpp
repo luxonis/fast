@@ -10,6 +10,12 @@
 #  include <emmintrin.h>
 #endif
 
+#if __cplusplus >= 2017
+#  define register
+#else
+#  define register register
+#endif
+
 namespace fast
 {
   template <bool Aligned> void faster_corner_detect_10(const fast_byte* img, int img_width, int img_height, int img_stride,
@@ -27,7 +33,7 @@ namespace fast
       for(int y=3; y < img_height - 3; y++)
       {
           for(int x=3; x < 16; x++)
-              if(is_corner_10<Less>( (fast_byte*)img + y*img_stride + x, img_stride, barrier) || 
+              if(is_corner_10<Less>( (fast_byte*)img + y*img_stride + x, img_stride, barrier) ||
                  is_corner_10<Greater>( (fast_byte*)img + y*img_stride + x, img_stride, barrier))
                   corners.push_back(fast_xy(x, y));
 
@@ -180,7 +186,7 @@ namespace fast
           }
 
           for(int x=xend; x < img_width - 3; x++)
-              if(is_corner_10<Less>(img+y*img_stride+x, img_stride, barrier) || 
+              if(is_corner_10<Less>(img+y*img_stride+x, img_stride, barrier) ||
                  is_corner_10<Greater>(img+y*img_stride+x, img_stride, barrier))
                   corners.push_back(fast_xy(x, y));
       }
